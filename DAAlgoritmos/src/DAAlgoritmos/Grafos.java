@@ -828,11 +828,11 @@ import java.util.*;
 				System.out.println("Aristas Autodirigidas (True/False)");
 				boolean a =datos.nextBoolean();
 				Met=g.G_ER(n, m, d, a);
-				//g.Aristas(Met);
+				g.Aristas(Met);
 				Met2 = g.Proy_2(Met, d);
 				if(Met2.size()>0) {
-					//System.out.println(Met2.size());
-					//g.Aristas(Met2);
+					System.out.println(Met2.size());
+					g.Aristas(Met2);
 				}
 				//System.out.println("Regresar al Menú (S/N)");
 				//Final = datos.next();
@@ -850,7 +850,6 @@ import java.util.*;
 				g.Aristas(Met);
 				Met2 = g.Proy_2(Met, d);
 				if(Met2.size()>0) {
-					//System.out.println(Met2.size());
 					g.Aristas(Met2);
 				}
 				//System.out.println("Regresar al Menú (S/N)");
@@ -869,7 +868,6 @@ import java.util.*;
 				g.Aristas(Met);
 				Met2 = g.Proy_2(Met, d);
 				if(Met2.size()>0) {
-					//System.out.println(Met2.size());
 					g.Aristas(Met2);
 				}
 				//System.out.println("Regresar al Menú (S/N)");
@@ -888,7 +886,6 @@ import java.util.*;
 				g.Aristas(Met);
 				Met2 = g.Proy_2(Met, d);
 				if(Met2.size()>0) {
-					//System.out.println(Met2.size());
 					g.Aristas(Met2);
 				}
 				//System.out.println("Regresar al Menú (S/N)");
