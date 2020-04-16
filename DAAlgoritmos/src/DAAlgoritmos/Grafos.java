@@ -3,6 +3,7 @@ package DAAlgoritmos;
 import java.io.*;
 import java.util.*;
 
+
 //import pruebas.Grafos;
 
 
@@ -355,6 +356,83 @@ import java.util.*;
 		//return Arcf;	
 		}
 		
+		//Crea el archivo con pesos 
+		public static void Aristas_p(HashMap <String,Double> Mod) throws IOException {
+			HashMap <String,Double> Arista = new HashMap <String,Double> ();
+			Scanner f = new Scanner(System.in);
+			System.out.println("Tipo de Archivo:");
+			System.out.println("1. Archivo extensión dot");
+			System.out.println("2. Archivo extensión csv");
+			int arc= f.nextInt();
+			Arista = Mod;
+			int fin = Arista.size();
+			switch(arc) {
+			case 1:
+				System.out.println("Nombre del Archivo");
+				String  nom = f.next();
+				nom = nom + ".dot";
+				File Arcf = new File(nom);
+				BufferedWriter bf = null;;
+				if (Arcf.createNewFile()) {
+				try {
+					bf = new BufferedWriter(new FileWriter(Arcf));
+					bf.write("Source--Target--Weight");
+					bf.newLine();
+					String AW;
+					Iterator<String> AF = Arista.keySet().iterator();
+					while (AF.hasNext()) {
+						AW= AF.next();
+						AW= AW+"--"+Arista.get(AW);
+						bf.write(AW);
+						bf.newLine();
+					}
+				}catch(IOException e){
+		            e.printStackTrace();
+		        }finally{
+		            
+		            try{
+		                bf.close();
+		            }catch(Exception e){}
+				}}
+				System.out.println("Listo se ha creado el archivo "+ nom);
+				System.out.println("En la ruta "+ Arcf.getAbsolutePath());
+				break;
+			case 2:
+				System.out.println("Nombre del Archivo");
+				nom = f.next();
+				nom = nom + ".csv";
+				Arcf = new File(nom);
+				bf = null;;
+				if (Arcf.createNewFile()) {
+				try {
+					bf = new BufferedWriter(new FileWriter(Arcf));
+					bf.write("Source,--,Target,Weight");
+					bf.newLine();
+					String AW;
+					Iterator<String> AF = Arista.keySet().iterator();
+					while (AF.hasNext()) {
+						AW= new String(AF.next());
+						AW=AW+","+Arista.get(AW);
+						AW=AW.replace("--", ",--,");
+						AW=AW.replace("->", ",->,");
+						bf.write(AW);
+						bf.newLine();
+					}
+				}catch(IOException e){
+		            e.printStackTrace();
+		        }finally{
+		            
+		            try{
+		                bf.close();
+		            }catch(Exception e){}
+				}} System.out.println("Listo se ha creado el archivo "+ nom);
+				System.out.println("En la ruta "+ Arcf.getAbsolutePath());
+				break;
+			}
+			
+		//return Arcf;	
+		}
+		
 		//Extracción de Nodos con base en las aristas
 		public static  HashMap<Integer,String> ext( HashMap<String,Integer> a){
 			HashMap<String,Integer> aristas = new HashMap<String,Integer> ();
@@ -504,7 +582,8 @@ import java.util.*;
 		}
 		
 		//Selección del Nodo origen
-		public static String Nodo_arb (HashMap<String,Integer> Ari) {
+		//Código para solicitar el nodo a buscar.
+		public static String Nodo_arb (HashMap<String,Integer> Ari,int ori) {
 			Grafos g = new Grafos();
 			HashMap<Integer,String> nvo_nodos = new HashMap<Integer,String> ();
 			HashMap<String,Integer> aristas = new HashMap<String,Integer> ();
@@ -514,7 +593,17 @@ import java.util.*;
 			String nodo = null;
 			int res = 0;
 			// Validación del nodo solicitado
+			switch (ori) {
+			case 0:
 				System.out.println("¿Desea inserta el nodo? S/N");
+				break;
+			case 1:
+				System.out.println("¿Desea inserta el nodo origen? S/N");
+				break;
+			case 2:
+				System.out.println("¿Desea inserta el nodo destino? S/N");
+				break;
+			}
 				String opc = datos.next();
 				switch (opc.toUpperCase()) {
 				case "S":
@@ -532,6 +621,7 @@ import java.util.*;
 						break;
 					}
 					boolean valida = g.val_nodo(nvo_nodos, nodo);
+					//System.out.println(valida+" P3");
 					if (valida == true) {
 						pr=2;}
 					else{pr=1;}}
@@ -764,6 +854,336 @@ import java.util.*;
 		return Arbol;
 		}
 		
+		//} 
+		
+		//Crea el peso de las aristas 
+		public static HashMap<String, Double> Aristas_pesos(HashMap<String,Integer> Arista,double a, double b,boolean ent){
+			HashMap<String,Double> Ari_peso = new HashMap<String,Double>();
+			double min = Math.min(a, b);
+			double max = Math.max(a, b);
+			double rgo = max-min;
+			double peso = 0;
+			String llave;
+			Iterator <String> clave = Arista.keySet().iterator();
+			if (ent == false) {
+				while(clave.hasNext()){
+					llave = clave.next();
+					peso = (rgo * Math.random())+min;
+					Ari_peso.put(llave, peso);
+				}			
+			}else if(ent == true) {
+				while(clave.hasNext()){
+					llave = clave.next();
+					peso = (rgo * Math.random())+min;
+					Ari_peso.put(llave, Math.floor(peso));
+				}
+			}
+		
+		Iterator<String> llave2 = Arista.keySet().iterator();
+		while (llave2.hasNext()) {
+			llave = llave2.next();
+		}
+		
+		return Ari_peso;
+			
+		}
+		
+		//Clasificador y administrador de aristas del grafo dirigido
+		public static HashMap<String,Double> Clas_Arista_D(String nodo,Double peso, HashMap<String,Double> Arista,HashMap<String,Double> Clas){
+			String llave;
+			String nod1;
+			String nod2;
+			Iterator<String> clave = Arista.keySet().iterator();
+				while (clave.hasNext()) {
+					llave =clave.next();
+					if (llave.contains(nodo)) {
+						nod1= llave.substring(0, llave.indexOf("-"));
+						nod2= llave.substring(llave.indexOf("-")+2, llave.length());
+						if (nodo.equalsIgnoreCase(nod1) & !nodo.equalsIgnoreCase(nod2)) {
+							Clas.put(llave,Arista.get(llave)+peso);
+						}
+					}
+				}	
+				
+			return Clas;
+		}
+		
+		//Clasificador y administrador de aristas del grafo no dirigido
+		public static HashMap<String,Double> Clas_Arista_ND(String nodo,Double peso, HashMap<String,Double> Arista,HashMap<String,Double> Clas){
+			String llave;
+			String nod1;
+			String nod2;
+			Iterator<String> clave = Arista.keySet().iterator();
+				while (clave.hasNext()) {
+					llave =clave.next();
+					if (llave.contains(nodo)) {
+						nod1= llave.substring(0, llave.indexOf("-"));
+						nod2= llave.substring(llave.indexOf("-")+2, llave.length());
+							if (nodo.equalsIgnoreCase(nod1) & !nodo.equalsIgnoreCase(nod2) ) {
+								Clas.put(llave, Arista.get(llave)+peso);
+							}else if (!nodo.equalsIgnoreCase(nod1) & nodo.equalsIgnoreCase(nod2)) {
+								Clas.put(nod2+"--"+nod1, Arista.get(llave)+peso);
+							}
+					}
+				}	
+			return Clas;
+		}
+		
+		//Solicita los valores mínimos y máximos para Diajkstra
+		public static double valor(int a) {
+			double num =0;
+			Scanner datos = new Scanner(System.in);
+			String opc;
+			switch(a) {
+			case 1:
+				System.out.println("Valores para calcular los pesos de las aristas");
+				System.out.println("Inserte el inicio del intervalo");
+					num = datos.nextDouble();
+				break;
+			case 2:
+				System.out.println("Inserte el fin del intervalo");
+				num = datos.nextDouble();
+				break;
+			case 3:
+				System.out.println("Intervalo invalido,");
+				System.out.println("favor de ingresar un nuevo intervalo: ");
+				System.out.println("Inserte el inicio del intervalo");
+				num = datos.nextDouble();
+			default:
+				System.out.println("Opción Invalida");
+			}
+			return num;
+			}
+		
+		//Extrae los pesos de las aristas del algoritmo de Dijkstra
+		public static HashMap<String,Double> Ari_peso_real(HashMap<String,Double> ap,HashMap<String,Double> ar,boolean dir){
+			String clave,nod1,nod2;
+			HashMap<String,Double> Arbol = new HashMap<String,Double>();
+			Iterator <String> llave = ar.keySet().iterator();
+			if (dir == true) {
+				while(llave.hasNext()) {
+					clave = llave.next();
+					clave = clave.replace("--", "->");
+					Arbol.put(clave, ap.get(clave));
+				}
+			} else if (dir == false) {
+				while (llave.hasNext()) {
+					clave= llave.next();
+					nod1 = clave.substring(0, clave.indexOf("-"));
+					nod2 = clave.substring(clave.indexOf("-")+2, clave.length());
+					if (ap.containsKey(nod1+"--"+nod2)) {
+						Arbol.put(clave, ap.get(nod1+"--"+nod2));
+					}else if(ap.containsKey(nod2+"--"+nod1)) {
+						Arbol.put(clave,ap.get(nod2+"--"+nod1));
+					}
+				}
+			}
+		return Arbol;		
+		}
+		
+		//Algoritmo de Dijsktra
+		public static HashMap<String,Double> Dijkstra(HashMap<String,Integer> aristas,String Nd_ori,String Nd_fin,boolean dir) throws IOException {
+			Grafos g = new Grafos();
+			HashMap<String,Double> Ari_pesos = new HashMap<String,Double>();
+			HashMap<String,Double> Ari_class = new HashMap<String,Double>();
+			HashMap<Integer,String> Ari_lim = new HashMap<Integer,String>();
+			HashMap<String,Double> Arbol = new HashMap<String,Double>();
+			HashMap<Integer,String> visit = new HashMap<Integer,String>();
+			double mi, ma,peso;
+			Scanner datos = new Scanner(System.in);
+			String opc;
+			double min = valor(1);
+			double max = valor(2);
+			while (min == max) {
+				min = valor(3);
+				max = valor(2);
+			}
+			mi = Math.min(min, max);
+			ma=Math.max(min, max);
+			boolean ent= false;
+			System.out.println("¿Desea sólo valores enteros? S/N");
+			String opc2 = datos.next();
+			opc2= opc2.toUpperCase();
+			if(opc2.equalsIgnoreCase("S")) {
+				ent = true;
+			}
+			Ari_pesos = g.Aristas_pesos(aristas, mi, ma, ent);
+			System.out.println("¿Desea guardar las aristas y sus pesos? S/N");
+			String arc = datos.next();
+			arc = arc.toUpperCase();
+			if(arc.equalsIgnoreCase("S")) {
+				g.Aristas_p(Ari_pesos);
+			}
+			if (Nd_ori.equalsIgnoreCase(Nd_fin)) {
+				if(Ari_pesos.containsKey(Nd_ori+"--"+Nd_fin)) {
+					System.out.println("El costo de ir de "+Nd_ori + "a "+Nd_fin + "es de:" +String.format("%.2f", Ari_pesos.get(Nd_ori+"--"+Nd_fin)));
+				} else if(aristas.containsKey(Nd_ori+"->"+Nd_fin)) {
+					System.out.println("El costo de ir de "+Nd_ori + "a "+Nd_fin + "es de:" +String.format("%.2f", Ari_pesos.get(Nd_ori+"->"+Nd_fin)));
+				}else {
+					System.out.println("No existe camino de "+Nd_ori +" a "+Nd_fin);
+				}
+			}else {
+				peso = 0;
+				visit.put(visit.size(), Nd_ori);
+				String clave,arista = null,nodo,nodo_fin=null,nodo_val=Nd_ori;
+				if (dir == true) {
+					Ari_class = g.Clas_Arista_D(Nd_ori, peso,Ari_pesos, Ari_class);
+				}else if (dir == false) {
+					Ari_class = g.Clas_Arista_ND(Nd_ori, peso,Ari_pesos, Ari_class);
+				}
+					while(!visit.containsValue(Nd_fin) & !Ari_class.isEmpty() & nodo_fin!=nodo_val) {
+						peso = Double.POSITIVE_INFINITY;
+						nodo_val=nodo_fin;
+						Iterator<String> llave = Ari_class.keySet().iterator();
+						while (llave.hasNext()) {
+							clave = llave.next();
+							nodo = clave.substring(clave.indexOf("-")+2, clave.length());
+							if (Ari_class.get(clave)<peso & !visit.containsValue(nodo) ){
+								arista = clave;
+								peso = Ari_class.get(clave);
+								nodo_fin= nodo;
+							}
+							if (visit.containsValue(nodo)) {
+								Ari_lim.put(Ari_lim.size(), clave);
+							}
+						}
+						for (int k =0;k<Ari_lim.size();k++) {
+							Ari_class.remove(Ari_lim.get(k));
+						}
+						Ari_lim.clear();
+						Arbol.put(arista, peso);
+						if (dir == true) {
+							Ari_class = g.Clas_Arista_D(nodo_fin, peso,Ari_pesos, Ari_class);
+						}else if (dir == false) {
+							Ari_class = g.Clas_Arista_ND(nodo_fin, peso,Ari_pesos, Ari_class);
+						}
+						visit.put(visit.size(), nodo_fin);
+					}	
+				//}
+			
+				if(visit.containsValue(Nd_fin)) {
+					System.out.println("El camino mas corto de " +Nd_ori+" a " +Nd_fin+ " es de:");
+					System.out.println(String.format("%.2f", peso)+ " Unidades");
+				} else {
+					System.out.println("No existe camino entre el " + Nd_ori +" a "+Nd_fin);
+				}
+				
+			}
+			Arbol = g.Ari_peso_real(Ari_pesos, Arbol, dir);
+			return Arbol;
+			
+		}
+		
+		//Algoritmo de Dijsktra completo Nodo origen.
+		public static HashMap<String,Double> Dijkstra_com(HashMap<String,Integer> aristas,String Nd_ori,boolean dir) throws IOException {
+			Grafos g = new Grafos();
+			HashMap<String,Double> Ari_pesos = new HashMap<String,Double>();
+			HashMap<String,Double> Ari_class = new HashMap<String,Double>();
+			HashMap<Integer,String> Ari_lim = new HashMap<Integer,String>();
+			HashMap<String,Double> Arbol = new HashMap<String,Double>();
+			HashMap<String,Double> Arbol_com = new HashMap<String,Double>();
+			HashMap<Integer,String> nodos = new HashMap<Integer,String>();
+			HashMap<Integer,String> visit = new HashMap<Integer,String>();
+			double mi, ma,peso;
+			Scanner datos = new Scanner(System.in);
+			String opc;
+			double min = valor(1);
+			double max = valor(2);
+			while (min == max) {
+				min = valor(3);
+				max = valor(2);
+			}
+			mi = Math.min(min, max);
+			ma=Math.max(min, max);
+			boolean ent= false;
+			System.out.println("¿Desea sólo valores enteros? S/N");
+			String opc2 = datos.next();
+			opc2= opc2.toUpperCase();
+			if(opc2.equalsIgnoreCase("S")) {
+				ent = true;
+			}
+			Ari_pesos = g.Aristas_pesos(aristas, mi, ma, ent);
+			System.out.println("¿Desea guardar las aristas y sus pesos? S/N");
+			String arc = datos.next();
+			arc = arc.toUpperCase();
+			if(arc.equalsIgnoreCase("S")) {
+				g.Aristas_p(Ari_pesos);
+			}
+				peso = 0;
+				nodos = g.ext(aristas);
+				visit.put(visit.size(), Nd_ori);
+				String clave,arista = null,nodo,nodo_fin=null,nodo_val=Nd_ori;
+				//System.out.println("PR2");
+				if (dir == true) {
+					Ari_class = g.Clas_Arista_D(Nd_ori, peso,Ari_pesos, Ari_class);
+				}else if (dir == false) {
+					Ari_class = g.Clas_Arista_ND(Nd_ori, peso,Ari_pesos, Ari_class);
+				}
+					while(nodos.size() != visit.size() & nodo_fin!=nodo_val) {
+						peso = Double.POSITIVE_INFINITY;
+						nodo_val=nodo_fin;
+						Iterator<String> llave = Ari_class.keySet().iterator();
+						while (llave.hasNext()) {
+							clave = llave.next();
+							nodo = clave.substring(clave.indexOf("-")+2, clave.length());
+							if (Ari_class.get(clave)<peso & !visit.containsValue(nodo) ){
+								arista = clave;
+								peso = Ari_class.get(clave);
+								nodo_fin= nodo;
+							}
+							if (visit.containsValue(nodo)) {
+								Ari_lim.put(Ari_lim.size(), clave);
+							}
+						}
+						for (int k =0;k<Ari_lim.size();k++) {
+							Ari_class.remove(Ari_lim.get(k));
+						}
+						Ari_lim.clear();
+						if (nodo_fin == nodo_val) {
+							for (int k =0;k<nodos.size();k++) {
+								if (!visit.containsValue(nodos.get(k))) {
+									nodo_fin = nodos.get(k);
+									k=nodos.size();
+									peso = 0;
+								}
+							}
+						}else if (nodo_fin != nodo_val) {
+							Arbol.put(arista, peso);
+						}
+						if (dir == true) {
+							Ari_class = g.Clas_Arista_D(nodo_fin, peso,Ari_pesos, Ari_class);
+						}else if (dir == false) {
+							Ari_class = g.Clas_Arista_ND(nodo_fin, peso,Ari_pesos, Ari_class);
+						}
+						visit.put(visit.size(), nodo_fin);
+					}	
+				//}
+				Arbol_com=Arbol;
+				Arbol = g.Ari_peso_real(Ari_pesos, Arbol, dir);
+				String clave2;
+				double pt=0;
+				Iterator <String> llave2 = Arbol.keySet().iterator();
+				while (llave2.hasNext()) {
+					clave2 = llave2.next();
+					pt = pt + Arbol.get(clave2);
+				}
+				System.out.println("El camino de Dijkstra del "+Nd_ori+" es de: " +String.format("%.2f", pt)+ " Unidades");
+				System.out.println("Desea guardar las aristas con los: ");
+				System.out.println("1. Pesos acumulados.");
+				System.out.println("2. Pesos reales.");
+				int op = datos.nextInt();
+				switch (op) {
+				case 1:
+					return Arbol_com;
+				case 2:
+					return Arbol;
+				default:
+					return Arbol;
+				}
+			
+		}
+		
+		//Proyecto 2
 		public static HashMap <String,Integer> Proy_2 (HashMap<String,Integer> Arista, boolean dir){
 			Grafos g = new Grafos();
 			HashMap<String,Integer> Arbol = new HashMap<String,Integer>();
@@ -776,17 +1196,17 @@ import java.util.*;
 			int Opcion = datos.nextInt();
 			switch(Opcion) {
 			case 1:
-				String Nod = g.Nodo_arb(Arista);
+				String Nod = g.Nodo_arb(Arista,0);
 				Arbol = g.bfs(Nod, Arista, dir);
 				//g.Aristas(Arbol);
 				break;
 			case 2:
-				Nod = g.Nodo_arb(Arista);
+				Nod = g.Nodo_arb(Arista,0);
 				Arbol = g.dfs_ite(Nod,Arista, dir);
 				//g.Aristas(Arbol);
 				break;
 			case 3:
-				Nod = g.Nodo_arb(Arista);
+				Nod = g.Nodo_arb(Arista,0);
 				Arbol = g.dfs_rec(Nod, Arista, Arbol , dir);
 				//g.Aristas(Arbol);
 			case 4:
@@ -798,108 +1218,153 @@ import java.util.*;
 			}
 			return Arbol;
 			
-		} 
+		}
 		
-		public static void main (String [] args) throws IOException {
-			//String Final ="s";
-			//while (Final == "s" || Final == "S") {
+		//Base del proyecto 3
+		public static HashMap<String,Double> Proy_3(HashMap<String,Integer> arista, boolean dir) throws IOException{
 			Grafos g = new Grafos();
-			int n = 0;
+			HashMap<String,Double> Arbol = new HashMap<String,Double>();
+			HashMap<String,Double> Ari_peso = new HashMap<String,Double>();
+			System.out.println("¿Desea aplicar alguno de los siguientes metodos, al grafo generado?");
+			System.out.println("1. Algoritmo de Dijkstra");
+			System.out.println("2. Algoritmo de Dijkstra (Completo)");
+			System.out.println("3. Salir");
 			Scanner datos = new Scanner(System.in);
-			HashMap <String,Integer> nodos = new HashMap <String, Integer>();
-			HashMap <Integer,Double> Esp= new HashMap<Integer,Double>();
-			HashMap <String,Integer> Met = new HashMap <String, Integer>();
-			HashMap <String,Integer> Met2 = new HashMap <String, Integer>();
-			System.out.println("Menú para seleccionar tipo de grafo");
-			System.out.println("1. Modelo de Erdös y Rényi");
-			System.out.println("2. Modelo de Gilbert");
-			System.out.println("3. Modelo geográfico simple");
-			System.out.println("4. Modelo Barabási-Albert");
-			System.out.println("5. Salir");
 			int Opcion = datos.nextInt();
 			switch(Opcion) {
 			case 1:
-				System.out.println("Ingrese el número de Nodos");
-				n=datos.nextInt();
-				System.out.println("Ingrese el número de Aristas");
-				int m =datos.nextInt();
-				System.out.println("Grafo dirigido (True/False)");
-				boolean d =datos.nextBoolean();
-				System.out.println("Aristas Autodirigidas (True/False)");
-				boolean a =datos.nextBoolean();
-				Met=g.G_ER(n, m, d, a);
-				g.Aristas(Met);
-				Met2 = g.Proy_2(Met, d);
-				if(Met2.size()>0) {
-					System.out.println(Met2.size());
-					g.Aristas(Met2);
-				}
-				//System.out.println("Regresar al Menú (S/N)");
-				//Final = datos.next();
+				String nodo_ori = g.Nodo_arb(arista, 1);
+				String nodo_fin = g.Nodo_arb(arista, 2);
+				Arbol = g.Dijkstra(arista, nodo_ori, nodo_fin, dir);
 				break;
 			case 2:
-				System.out.println("Ingrese el número de Nodos");
-				n=datos.nextInt();
-				System.out.println("Ingrese la probabilidad");
-				double p =datos.nextDouble();
-				System.out.println("Grafo dirigido (True/False)");
-				d =datos.nextBoolean();
-				System.out.println("Aristas Autodirigidas (True/False)");
-				a =datos.nextBoolean();
-				Met=g.G_Gil(n, p, d, a);
-				g.Aristas(Met);
-				Met2 = g.Proy_2(Met, d);
-				if(Met2.size()>0) {
-					g.Aristas(Met2);
-				}
-				//System.out.println("Regresar al Menú (S/N)");
-				//Final = datos.next();
+				//System.out.println(arista.size());
+				nodo_ori = g.Nodo_arb(arista, 1);
+				Arbol = g.Dijkstra_com(arista, nodo_ori, dir);
 				break;
 			case 3:
-				System.out.println("Ingrese el número de Nodos");
-				n=datos.nextInt();
-				System.out.println("Ingrese la distancia entre nodos");
-				double r =datos.nextDouble();
-				System.out.println("Grafo dirigido (True/False)");
-				d =datos.nextBoolean();
-				System.out.println("Aristas Autodirigidas (True/False)");
-				a =datos.nextBoolean();
-				Met=g.G_Geo(n, r, d, a);
-				g.Aristas(Met);
-				Met2 = g.Proy_2(Met, d);
-				if(Met2.size()>0) {
-					g.Aristas(Met2);
-				}
-				//System.out.println("Regresar al Menú (S/N)");
-				//Final = datos.next();
-				break;
-			case 4:
-				System.out.println("Ingrese el número de Nodos");
-				n=datos.nextInt();
-				System.out.println("Ingrese el numero de aristas por nodo");
-				m =datos.nextInt();
-				System.out.println("Grafo dirigido (True/False)");
-				d =datos.nextBoolean();
-				System.out.println("Aristas Autodirigidas (True/False)");
-				a =datos.nextBoolean();
-				Met=g.G_Bar(n, m, d, a);
-				g.Aristas(Met);
-				Met2 = g.Proy_2(Met, d);
-				if(Met2.size()>0) {
-					g.Aristas(Met2);
-				}
-				//System.out.println("Regresar al Menú (S/N)");
-				//Final = datos.next();
-				break;
-			case 5:
-				//Final = "N";
-				System.out.println("Gracias!");
+				System.out.println("Gracias!!");
 				break;
 			default:
-				System.out.println("Opción invalidad");
-				//Final = "N";
-			}System.out.println("!Gracias!");
+				System.out.println("Opción Invalida");
+				break;
 			}
-			//} 
+			return Arbol;
+		}
+		
+		public static void main (String [] args) throws IOException {
+		//String Final ="s";
+		//while (Final == "s" || Final == "S") {
+		Grafos g = new Grafos();
+		int n = 0;
+		Scanner datos = new Scanner(System.in);
+		HashMap <String,Integer> nodos = new HashMap <String, Integer>();
+		HashMap <Integer,Double> Esp= new HashMap<Integer,Double>();
+		HashMap <String,Integer> Met = new HashMap <String, Integer>();
+		HashMap <String,Integer> Met2 = new HashMap <String, Integer>();
+		HashMap <String,Double> Met3 = new HashMap <String, Double>();
+		//HashMap <String,Double> Met4 = new HashMap <String, Double>();
+		System.out.println("Menú para seleccionar tipo de grafo");
+		System.out.println("1. Modelo de Erdös y Rényi");
+		System.out.println("2. Modelo de Gilbert");
+		System.out.println("3. Modelo geográfico simple");
+		System.out.println("4. Modelo Barabási-Albert");
+		System.out.println("5. Salir");
+		int Opcion = datos.nextInt();
+		switch(Opcion) {
+		case 1:
+			System.out.println("Ingrese el número de Nodos");
+			n=datos.nextInt();
+			System.out.println("Ingrese el número de Aristas");
+			int m =datos.nextInt();
+			System.out.println("Grafo dirigido (True/False)");
+			boolean d =datos.nextBoolean();
+			System.out.println("Aristas Autodirigidas (True/False)");
+			boolean a =datos.nextBoolean();
+			Met=g.G_ER(n, m, d, a);
+			g.Aristas(Met);
+			Met2 = g.Proy_2(Met, d);
+			if(Met2.size()>0) {
+				System.out.println(Met2.size());
+				g.Aristas(Met2);
+			}
+			Met3 = g.Proy_3(Met, d);
+			System.out.println("Las aristas se guardaran en:");
+			g.Aristas_p(Met3);
+			//System.out.println("Regresar al Menú (S/N)");
+			//Final = datos.next();
+			break;
+		case 2:
+			System.out.println("Ingrese el número de Nodos");
+			n=datos.nextInt();
+			System.out.println("Ingrese la probabilidad");
+			double p =datos.nextDouble();
+			System.out.println("Grafo dirigido (True/False)");
+			d =datos.nextBoolean();
+			System.out.println("Aristas Autodirigidas (True/False)");
+			a =datos.nextBoolean();
+			Met=g.G_Gil(n, p, d, a);
+			g.Aristas(Met);
+			Met2 = g.Proy_2(Met, d);
+			if(Met2.size()>0) {
+				g.Aristas(Met2);
+			}
+			Met3 = g.Proy_3(Met, d);
+			System.out.println("Las aristas se guardaran en:");
+			g.Aristas_p(Met3);
+			//System.out.println("Regresar al Menú (S/N)");
+			//Final = datos.next();
+			break;
+		case 3:
+			System.out.println("Ingrese el número de Nodos");
+			n=datos.nextInt();
+			System.out.println("Ingrese la distancia entre nodos");
+			double r =datos.nextDouble();
+			System.out.println("Grafo dirigido (True/False)");
+			d =datos.nextBoolean();
+			System.out.println("Aristas Autodirigidas (True/False)");
+			a =datos.nextBoolean();
+			Met=g.G_Geo(n, r, d, a);
+			g.Aristas(Met);
+			Met2 = g.Proy_2(Met, d);
+			if(Met2.size()>0) {
+				g.Aristas(Met2);
+			}
+			Met3 = g.Proy_3(Met, d);
+			System.out.println("Las aristas se guardaran en:");
+			g.Aristas_p(Met3);
+			//System.out.println("Regresar al Menú (S/N)");
+			//Final = datos.next();
+			break;
+		case 4:
+			System.out.println("Ingrese el número de Nodos");
+			n=datos.nextInt();
+			System.out.println("Ingrese el numero de aristas por nodo");
+			m =datos.nextInt();
+			System.out.println("Grafo dirigido (True/False)");
+			d =datos.nextBoolean();
+			System.out.println("Aristas Autodirigidas (True/False)");
+			a =datos.nextBoolean();
+			Met=g.G_Bar(n, m, d, a);
+			g.Aristas(Met);
+			Met2 = g.Proy_2(Met, d);
+			if(Met2.size()>0) {
+				g.Aristas(Met2);
+			}
+			Met3 = g.Proy_3(Met, d);
+			System.out.println("Las aristas se guardaran en:");
+			g.Aristas_p(Met3);
+			//System.out.println("Regresar al Menú (S/N)");
+			//Final = datos.next();
+			break;
+		case 5:
+			//Final = "N";
+			System.out.println("Gracias!");
+			break;
+		default:
+			System.out.println("Opción invalidad");
+			//Final = "N";
+		}System.out.println("!Gracias!");
+		}
 		}
 
