@@ -1226,7 +1226,7 @@ import java.util.*;
 			HashMap<String,Double> Arbol = new HashMap<String,Double>();
 			HashMap<String,Double> Ari_peso = new HashMap<String,Double>();
 			System.out.println("¿Desea aplicar alguno de los siguientes metodos, al grafo generado?");
-			System.out.println("1. Algoritmo de Dijkstra");
+			System.out.println("1. Algoritmo de Dijkstra (Dos nodos)");
 			System.out.println("2. Algoritmo de Dijkstra (Completo)");
 			System.out.println("3. Salir");
 			Scanner datos = new Scanner(System.in);
@@ -1362,7 +1362,7 @@ import java.util.*;
 			System.out.println("Gracias!");
 			break;
 		default:
-			System.out.println("Opción invalidad");
+			System.out.println("Opción invalida");
 			//Final = "N";
 		}System.out.println("!Gracias!");
 		}
